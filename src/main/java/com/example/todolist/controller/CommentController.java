@@ -4,6 +4,7 @@ import com.example.todolist.dto.CommentRequestDto;
 import com.example.todolist.dto.CommentResponseDto;
 import com.example.todolist.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,17 +15,21 @@ public class CommentController {
     private CommentService commentService;
 
     @PostMapping
-    public CommentResponseDto createComment(@RequestBody CommentRequestDto commentRequestDto) {
+    public CommentResponseDto createComment(@RequestBody CommentRequestDto commentRequestDto, Authentication authentication) {
+        String username = authentication.getName();
+        commentRequestDto.setUserId(username);
         return commentService.createComment(commentRequestDto);
     }
 
     @PutMapping("/{id}")
-    public CommentResponseDto updateComment(@PathVariable Long id, @RequestBody CommentRequestDto commentRequestDto) {
-        return commentService.updateComment(id, commentRequestDto);
+    public CommentResponseDto updateComment(@PathVariable Long id, @RequestBody CommentRequestDto commentRequestDto, Authentication authentication) {
+        String username = authentication.getName();
+        return commentService.updateComment(id, commentRequestDto, username);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteComment(@PathVariable Long id, @RequestBody CommentRequestDto commentRequestDto) {
-        commentService.deleteComment(id, commentRequestDto);
+    public void deleteComment(@PathVariable Long id, Authentication authentication) {
+        String username = authentication.getName();
+        commentService.deleteComment(id, username);
     }
 }

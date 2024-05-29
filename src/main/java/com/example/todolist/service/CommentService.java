@@ -23,6 +23,7 @@ public class CommentService {
 
     public CommentResponseDto createComment(CommentRequestDto commentRequestDto) {
         Optional<Schedule> scheduleOptional = scheduleRepository.findById(commentRequestDto.getScheduleId());
+
         if (!scheduleOptional.isPresent()) {
             throw new RuntimeException("Schedule not found");
         }
@@ -36,26 +37,47 @@ public class CommentService {
         comment.setCreatedAt(LocalDateTime.now());
 
         Comment savedComment = commentRepository.save(comment);
-
         return new CommentResponseDto(savedComment.getId(), savedComment.getContent(), savedComment.getUserId(), savedComment.getSchedule().getId(), savedComment.getCreatedAt());
     }
 
-    public CommentResponseDto updateComment(Long id, CommentRequestDto commentRequestDto) {
-        Comment comment = commentRepository.findById(id).orElseThrow(() -> new RuntimeException("Comment not found"));
+    public CommentResponseDto updateComment(Long id, CommentRequestDto commentRequestDto, String username) {
+        Optional<Comment> commentOptional = commentRepository.findById(id);
+
+        if (!commentOptional.isPresent()) {
+            throw new RuntimeException("Comment not found");
+        }
+
+        Comment comment = commentOptional.get();
+
+        // Check if the current user is the owner of the comment
+        if (!comment.getUserId().equals(username)) {
+            throw new RuntimeException("You are not authorized to update this comment");
+        }
 
         comment.setContent(commentRequestDto.getContent());
-
         Comment updatedComment = commentRepository.save(comment);
 
-        return new CommentResponseDto(updatedComment.getId(), updatedComment.getContent(), updatedComment.getUserId(), updatedComment.getSchedule().getId(), updatedComment.getCreatedAt());
+        return new CommentResponseDto(
+                updatedComment.getId(),
+                updatedComment.getContent(),
+                updatedComment.getUserId(),
+                updatedComment.getSchedule().getId(),
+                updatedComment.getCreatedAt()
+        );
     }
 
-    public void deleteComment(Long id, CommentRequestDto commentRequestDto) {
-        Comment comment = commentRepository.findById(id).orElseThrow(() -> new RuntimeException("Comment not found"));
+    public void deleteComment(Long id, String username) {
+        Optional<Comment> commentOptional = commentRepository.findById(id);
 
-        // 사용자가 댓글 작성자와 동일한지 확인
-        if (!comment.getUserId().equals(commentRequestDto.getUserId())) {
-            throw new RuntimeException("User mismatch");
+        if (!commentOptional.isPresent()) {
+            throw new RuntimeException("Comment not found");
+        }
+
+        Comment comment = commentOptional.get();
+
+        // Check if the current user is the owner of the comment
+        if (!comment.getUserId().equals(username)) {
+            throw new RuntimeException("You are not authorized to delete this comment");
         }
 
         commentRepository.delete(comment);
