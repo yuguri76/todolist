@@ -13,5 +13,5 @@ public class ScheduleRequestDto {
     private String title;
     private String content;
     private String responsible;
-    private String password; // password 필드 추가
+    private String password;
 }
