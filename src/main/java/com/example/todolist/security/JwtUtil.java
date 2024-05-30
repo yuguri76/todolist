@@ -16,7 +16,7 @@ public class JwtUtil {
 
     private final SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
     private final long ACCESS_TOKEN_VALIDITY = 1000 * 60 * 15; // 15분
-    private final long REFRESH_TOKEN_VALIDITY = 1000 * 60 * 60 * 24 * 7; // 7일
+    private final long REFRESH_TOKEN_VALIDITY = 1000 * 60 * 60 * 24 * 1; // 1일
 
     public String generateToken(String username, boolean isRefreshToken) {
         long validity = isRefreshToken ? REFRESH_TOKEN_VALIDITY : ACCESS_TOKEN_VALIDITY;

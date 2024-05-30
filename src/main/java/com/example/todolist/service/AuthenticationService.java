@@ -3,6 +3,7 @@ package com.example.todolist.service;
 import com.example.todolist.dto.UserLoginDto;
 import com.example.todolist.dto.UserResponseDto;
 import com.example.todolist.exception.UserNotFoundException;
+import com.example.todolist.exception.UsernameAlreadyExistsException;
 import com.example.todolist.model.User;
 import com.example.todolist.repository.UserRepository;
 import com.example.todolist.security.JwtUtil;
