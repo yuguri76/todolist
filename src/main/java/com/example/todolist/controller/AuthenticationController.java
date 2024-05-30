@@ -8,6 +8,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/auth")
 public class AuthenticationController {
@@ -16,7 +18,7 @@ public class AuthenticationController {
     private AuthenticationService authenticationService;
 
     @PostMapping("/login")
-    public ResponseEntity<UserResponseDto> login(@RequestBody UserLoginDto userLoginDto) {
+    public ResponseEntity<UserResponseDto> login(@Valid @RequestBody UserLoginDto userLoginDto) {
         UserResponseDto userResponseDto = authenticationService.login(userLoginDto);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Bearer " + userResponseDto.getToken());

@@ -42,7 +42,7 @@ public class CommentService {
                 .orElseThrow(() -> new ResourceNotFoundException("댓글을 찾을 수 없습니다."));
 
         if (!comment.getUserId().equals(username)) {
-            throw new UnauthorizedException("작성자만 삭제/수정할 수 있습니다.");
+            throw new UnauthorizedException("작성자만 수정할 수 있습니다.");
         }
 
         comment.setContent(commentRequestDto.getContent());
@@ -56,7 +56,7 @@ public class CommentService {
                 .orElseThrow(() -> new ResourceNotFoundException("댓글을 찾을 수 없습니다."));
 
         if (!comment.getUserId().equals(username)) {
-            throw new UnauthorizedException("작성자만 삭제/수정할 수 있습니다.");
+            throw new UnauthorizedException("작성자만 삭제할 수 있습니다.");
         }
 
         commentRepository.delete(comment);
