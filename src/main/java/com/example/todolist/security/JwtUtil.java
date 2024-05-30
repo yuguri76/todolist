@@ -12,7 +12,7 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private final SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512); //Keys.secretKeyFor(SignatureAlgorithm.HS512)를 사용하여 충분히 긴 비밀 키를 생성합니다.
+    private final SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512); //Keys.secretKeyFor(SignatureAlgorithm.HS512)를 사용하여 충분히 긴 비밀 키를 생성
 
     public String generateToken(String username) {
         return Jwts.builder()

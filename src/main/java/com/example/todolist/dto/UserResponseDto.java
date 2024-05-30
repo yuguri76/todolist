@@ -15,7 +15,7 @@ public class UserResponseDto {
     private String nickname;
     private String role;
     private LocalDateTime createdAt;
-    private String token; // JWT 토큰 필드 추가
+    private String token;
 
     // 토큰 없이 생성할 수 있는 생성자 추가
     public UserResponseDto(Long id, String username, String nickname, String role, LocalDateTime createdAt) {
