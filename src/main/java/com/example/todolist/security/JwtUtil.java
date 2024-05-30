@@ -8,18 +8,24 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class JwtUtil {
 
     private final SecretKey key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
-    //Keys.secretKeyFor(SignatureAlgorithm.HS512)를 사용하여 충분히 긴 비밀 키를 생성
+    private final long ACCESS_TOKEN_VALIDITY = 1000 * 60 * 15; // 15분
+    private final long REFRESH_TOKEN_VALIDITY = 1000 * 60 * 60 * 24 * 7; // 7일
 
-    public String generateToken(String username) {
+    public String generateToken(String username, boolean isRefreshToken) {
+        long validity = isRefreshToken ? REFRESH_TOKEN_VALIDITY : ACCESS_TOKEN_VALIDITY;
+        Map<String, Object> claims = new HashMap<>();
         return Jwts.builder()
+                .setClaims(claims)
                 .setSubject(username)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 60 * 60 * 1000)) // 60분
+                .setExpiration(new Date(System.currentTimeMillis() + validity))
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
     }
@@ -36,7 +42,7 @@ public class JwtUtil {
         return username.equals(extractUsername(token)) && !isTokenExpired(token);
     }
 
-    private boolean isTokenExpired(String token) {
+    public boolean isTokenExpired(String token) {
         return extractClaims(token).getExpiration().before(new Date());
     }
 }

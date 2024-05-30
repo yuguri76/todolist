@@ -28,8 +28,17 @@ public class AuthenticationService {
         }
 
         User user = userOptional.get();
-        String token = jwtUtil.generateToken(user.getUsername());
+        String accessToken = jwtUtil.generateToken(user.getUsername(), false);
+        String refreshToken = jwtUtil.generateToken(user.getUsername(), true);
 
-        return new UserResponseDto(user.getId(), user.getUsername(), user.getNickname(), user.getRole(), user.getCreatedAt(), token);
+        return new UserResponseDto(user.getId(), user.getUsername(), user.getNickname(), user.getRole(), user.getCreatedAt(), accessToken, refreshToken);
+    }
+
+    public String refresh(String refreshToken) {
+        if (jwtUtil.isTokenExpired(refreshToken)) {
+            throw new UserNotFoundException("Refresh Token이 만료되었습니다. 다시 로그인해 주세요.");
+        }
+        String username = jwtUtil.extractUsername(refreshToken);
+        return jwtUtil.generateToken(username, false);
     }
 }

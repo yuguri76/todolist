@@ -15,9 +15,10 @@ public class UserResponseDto {
     private String nickname;
     private String role;
     private LocalDateTime createdAt;
-    private String token;
+    private String accessToken;
+    private String refreshToken;
 
-    // 토큰 없이 생성할 수 있는 생성자 추가
+    // 필요한 경우 일부 필드만 포함하는 생성자 추가
     public UserResponseDto(Long id, String username, String nickname, String role, LocalDateTime createdAt) {
         this.id = id;
         this.username = username;
