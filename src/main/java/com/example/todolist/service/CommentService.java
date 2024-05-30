@@ -25,7 +25,7 @@ public class CommentService {
 
     public CommentResponseDto createComment(CommentRequestDto commentRequestDto) {
         Schedule schedule = scheduleRepository.findById(commentRequestDto.getScheduleId())
-                .orElseThrow(() -> new ResourceNotFoundException("Schedule not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("일정을 찾을 수 없습니다."));
 
         Comment comment = new Comment();
         comment.setContent(commentRequestDto.getContent());
@@ -39,7 +39,7 @@ public class CommentService {
 
     public CommentResponseDto updateComment(Long id, CommentRequestDto commentRequestDto, String username) {
         Comment comment = commentRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("댓글을 찾을 수 없습니다."));
 
         if (!comment.getUserId().equals(username)) {
             throw new UnauthorizedException("작성자만 삭제/수정할 수 있습니다.");
@@ -53,7 +53,7 @@ public class CommentService {
 
     public void deleteComment(Long id, String username) {
         Comment comment = commentRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("댓글을 찾을 수 없습니다."));
 
         if (!comment.getUserId().equals(username)) {
             throw new UnauthorizedException("작성자만 삭제/수정할 수 있습니다.");

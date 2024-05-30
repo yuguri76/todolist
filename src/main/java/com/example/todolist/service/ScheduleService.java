@@ -33,7 +33,7 @@ public class ScheduleService {
 
     public ScheduleResponseDto getScheduleById(Long id) {
         Schedule schedule = scheduleRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Schedule not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("일정을 찾을 수 없습니다."));
         return new ScheduleResponseDto(schedule.getId(), schedule.getTitle(), schedule.getContent(), schedule.getResponsible(), schedule.getCreatedAt());
     }
 
@@ -46,10 +46,10 @@ public class ScheduleService {
 
     public ScheduleResponseDto updateSchedule(Long id, ScheduleRequestDto scheduleRequestDto) {
         Schedule schedule = scheduleRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Schedule not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("일정을 찾을 수 없습니다."));
 
         if (!schedule.getPassword().equals(scheduleRequestDto.getPassword())) {
-            throw new UnauthorizedException("Password mismatch");
+            throw new UnauthorizedException("비밀번호가 틀립니다.");
         }
 
         schedule.setTitle(scheduleRequestDto.getTitle());
@@ -62,10 +62,10 @@ public class ScheduleService {
 
     public void deleteSchedule(Long id, ScheduleRequestDto scheduleRequestDto) {
         Schedule schedule = scheduleRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Schedule not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("일정을 찾을 수 없습니다."));
 
         if (!schedule.getPassword().equals(scheduleRequestDto.getPassword())) {
-            throw new UnauthorizedException("Password mismatch");
+            throw new UnauthorizedException("비밀번호가 틀립니다.");
         }
 
         scheduleRepository.delete(schedule);
