@@ -2,6 +2,8 @@ package com.example.todolist.service;
 
 import com.example.todolist.dto.ScheduleRequestDto;
 import com.example.todolist.dto.ScheduleResponseDto;
+import com.example.todolist.exception.ResourceNotFoundException;
+import com.example.todolist.exception.UnauthorizedException;
 import com.example.todolist.model.Schedule;
 import com.example.todolist.repository.ScheduleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +32,8 @@ public class ScheduleService {
     }
 
     public ScheduleResponseDto getScheduleById(Long id) {
-        Schedule schedule = scheduleRepository.findById(id).orElseThrow(() -> new RuntimeException("Schedule not found"));
+        Schedule schedule = scheduleRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Schedule not found"));
         return new ScheduleResponseDto(schedule.getId(), schedule.getTitle(), schedule.getContent(), schedule.getResponsible(), schedule.getCreatedAt());
     }
 
@@ -42,9 +45,11 @@ public class ScheduleService {
     }
 
     public ScheduleResponseDto updateSchedule(Long id, ScheduleRequestDto scheduleRequestDto) {
-        Schedule schedule = scheduleRepository.findById(id).orElseThrow(() -> new RuntimeException("Schedule not found"));
+        Schedule schedule = scheduleRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Schedule not found"));
+
         if (!schedule.getPassword().equals(scheduleRequestDto.getPassword())) {
-            throw new RuntimeException("Password mismatch");
+            throw new UnauthorizedException("Password mismatch");
         }
 
         schedule.setTitle(scheduleRequestDto.getTitle());
@@ -56,10 +61,13 @@ public class ScheduleService {
     }
 
     public void deleteSchedule(Long id, ScheduleRequestDto scheduleRequestDto) {
-        Schedule schedule = scheduleRepository.findById(id).orElseThrow(() -> new RuntimeException("Schedule not found"));
+        Schedule schedule = scheduleRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Schedule not found"));
+
         if (!schedule.getPassword().equals(scheduleRequestDto.getPassword())) {
-            throw new RuntimeException("Password mismatch");
+            throw new UnauthorizedException("Password mismatch");
         }
+
         scheduleRepository.delete(schedule);
     }
 }

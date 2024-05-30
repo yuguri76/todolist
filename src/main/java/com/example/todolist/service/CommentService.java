@@ -2,6 +2,8 @@ package com.example.todolist.service;
 
 import com.example.todolist.dto.CommentRequestDto;
 import com.example.todolist.dto.CommentResponseDto;
+import com.example.todolist.exception.ResourceNotFoundException;
+import com.example.todolist.exception.UnauthorizedException;
 import com.example.todolist.model.Comment;
 import com.example.todolist.model.Schedule;
 import com.example.todolist.repository.CommentRepository;
@@ -22,13 +24,8 @@ public class CommentService {
     private ScheduleRepository scheduleRepository;
 
     public CommentResponseDto createComment(CommentRequestDto commentRequestDto) {
-        Optional<Schedule> scheduleOptional = scheduleRepository.findById(commentRequestDto.getScheduleId());
-
-        if (!scheduleOptional.isPresent()) {
-            throw new RuntimeException("Schedule not found");
-        }
-
-        Schedule schedule = scheduleOptional.get();
+        Schedule schedule = scheduleRepository.findById(commentRequestDto.getScheduleId())
+                .orElseThrow(() -> new ResourceNotFoundException("Schedule not found"));
 
         Comment comment = new Comment();
         comment.setContent(commentRequestDto.getContent());
@@ -41,43 +38,25 @@ public class CommentService {
     }
 
     public CommentResponseDto updateComment(Long id, CommentRequestDto commentRequestDto, String username) {
-        Optional<Comment> commentOptional = commentRepository.findById(id);
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
 
-        if (!commentOptional.isPresent()) {
-            throw new RuntimeException("Comment not found");
-        }
-
-        Comment comment = commentOptional.get();
-
-        // Check if the current user is the owner of the comment
         if (!comment.getUserId().equals(username)) {
-            throw new RuntimeException("You are not authorized to update this comment");
+            throw new UnauthorizedException("작성자만 삭제/수정할 수 있습니다.");
         }
 
         comment.setContent(commentRequestDto.getContent());
         Comment updatedComment = commentRepository.save(comment);
 
-        return new CommentResponseDto(
-                updatedComment.getId(),
-                updatedComment.getContent(),
-                updatedComment.getUserId(),
-                updatedComment.getSchedule().getId(),
-                updatedComment.getCreatedAt()
-        );
+        return new CommentResponseDto(updatedComment.getId(), updatedComment.getContent(), updatedComment.getUserId(), updatedComment.getSchedule().getId(), updatedComment.getCreatedAt());
     }
 
     public void deleteComment(Long id, String username) {
-        Optional<Comment> commentOptional = commentRepository.findById(id);
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
 
-        if (!commentOptional.isPresent()) {
-            throw new RuntimeException("Comment not found");
-        }
-
-        Comment comment = commentOptional.get();
-
-        // Check if the current user is the owner of the comment
         if (!comment.getUserId().equals(username)) {
-            throw new RuntimeException("You are not authorized to delete this comment");
+            throw new UnauthorizedException("작성자만 삭제/수정할 수 있습니다.");
         }
 
         commentRepository.delete(comment);
