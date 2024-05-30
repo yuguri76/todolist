@@ -20,19 +20,12 @@ public class SecurityConfig {
     @Autowired
     private JwtRequestFilter jwtRequestFilter;
 
-    @Autowired
-    private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/users/register").permitAll()
+                        .requestMatchers("/api/auth/**", "/api/users/register", "/api/schedules/**").permitAll() // 인증 없이 접근 허용
                         .anyRequest().authenticated()
-                )
-                .exceptionHandling(exceptionHandling -> exceptionHandling
-                        .authenticationEntryPoint(customAuthenticationEntryPoint)
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));

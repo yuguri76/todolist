@@ -38,7 +38,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             try {
                 username = jwtUtil.extractUsername(jwt);
             } catch (Exception e) {
-                throw new InvalidTokenException("토큰이 유효하지 않습니다.");
+                // 유효하지 않은 토큰인 경우 예외를 던지지 않고 로그를 기록하거나 무시
+                // log.warn("Invalid token: {}", e.getMessage());
             }
         }
 
@@ -50,8 +51,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                         userDetails, null, userDetails.getAuthorities());
                 usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-            } else {
-                throw new InvalidTokenException("토큰이 유효하지 않습니다.");
             }
         }
         chain.doFilter(request, response);
